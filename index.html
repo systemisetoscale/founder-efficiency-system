@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Founder Efficiency System | Systemise to Scale</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --charcoal:#232529;--yellow:#FFD124;--blue:#2D69AE;
+  --lgrey:#F3F3F3;--mgrey:#D5D8DC;--white:#FFFFFF;
+  --charcoal-sub:#343739;--muted:#666666;--dark:#1A1A1A;
+
+  /* Pastel category colours — Google Sheets style */
+  --growth-bg:#C6EFCE;    --growth-txt:#276221;    --growth-brd:#82C481;
+  --fulfilment-bg:#BDD7EE;--fulfilment-txt:#1F497D; --fulfilment-brd:#6BAED6;
+  --structure-bg:#FFEB9C; --structure-txt:#9C6500;  --structure-brd:#F4C842;
+
+  /* Pastel energy colours */
+  --drain-bg:#FFC7CE;     --drain-txt:#9C0006;      --drain-brd:#FF8080;
+  --neutral-bg:#BDD7EE;   --neutral-txt:#1F497D;    --neutral-brd:#6BAED6;
+  --energ-bg:#C6EFCE;     --energ-txt:#276221;      --energ-brd:#82C481;
+
+  /* Tier colours */
+  --t1:#9C0006;--t1-bg:#FFC7CE;
+  --t2:#9C6500;--t2-bg:#FFEB9C;
+  --t3:#1F497D;--t3-bg:#BDD7EE;
+  --t4:#555555;--t4-bg:#F3F3F3;
+  --t5:#276221;--t5-bg:#C6EFCE;
+}
+body{font-family:'Inter',sans-serif;background:var(--lgrey);color:var(--charcoal);min-height:100vh}
+
+.header{background:var(--charcoal);display:flex;align-items:stretch;justify-content:space-between}
+.header-text{padding:16px 24px}
+.header-text h1{font-size:17px;font-weight:900;color:#fff;letter-spacing:0.05em;text-transform:uppercase}
+.header-text p{font-size:11px;color:#888;margin-top:3px;font-style:italic}
+.logo-block{background:var(--yellow);padding:0 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:76px}
+.logo-block .sts{font-size:19px;font-weight:900;color:var(--charcoal);letter-spacing:0.1em}
+.logo-block .tagline{font-size:7px;font-weight:700;color:var(--charcoal);text-align:center;letter-spacing:0.04em;line-height:1.3}
+.accent-bar{height:4px;background:var(--yellow)}
+
+.nav{display:flex;background:var(--charcoal-sub);border-bottom:2px solid var(--yellow)}
+.nav-btn{padding:12px 28px;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#888;background:none;border:none;cursor:pointer;transition:all .15s}
+.nav-btn:hover{color:#fff}
+.nav-btn.active{color:var(--yellow);border-bottom:3px solid var(--yellow);margin-bottom:-2px}
+
+.container{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+.view{display:none}.view.active{display:block}
+.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin:24px 0 10px}
+.panel{background:#fff;border-radius:8px;border:1px solid var(--mgrey);overflow:hidden;margin-bottom:16px}
+.panel-header{background:var(--charcoal);color:#fff;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:10px 16px;border-left:4px solid var(--yellow)}
+.panel-header.yellow-hdr{background:var(--yellow);color:var(--charcoal);border-left-color:var(--charcoal)}
+
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.kpi-card{background:#fff;border:1px solid var(--mgrey);border-radius:8px;padding:16px;border-top:3px solid var(--yellow)}
+.kpi-card.blue-top{border-top-color:var(--blue)}
+.kpi-card.red-top{border-top-color:var(--drain-brd)}
+.kpi-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:8px}
+.kpi-val{font-size:26px;font-weight:700;color:var(--charcoal)}
+.kpi-sub{font-size:11px;color:#888;margin-top:4px}
+.kpi-annual{font-size:13px;font-weight:700;color:var(--charcoal);margin-top:6px}
+
+.rate-wrap{display:flex;align-items:center;gap:6px;margin-top:4px}
+.rate-wrap input{width:90px;font-size:20px;font-weight:700;color:var(--charcoal);border:none;border-bottom:2px solid var(--yellow);background:transparent;font-family:'Inter',sans-serif;outline:none;padding:2px 4px}
+
+/* Dashboard panels */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.dash-panel{background:#fff;border:1px solid var(--mgrey);border-radius:8px;overflow:hidden}
+.dash-panel-hdr{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-left:3px solid var(--yellow)}
+.dash-panel-hdr.dark{background:var(--charcoal);color:#fff}
+.dash-panel-hdr.blue{background:var(--blue);color:#fff;border-left-color:var(--yellow)}
+.dash-panel-hdr.gold{background:var(--yellow);color:var(--charcoal);border-left-color:var(--charcoal)}
+.dash-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--lgrey)}
+.dash-item:last-child{border-bottom:none}
+.dash-item .lbl{font-size:12px;color:var(--dark);font-weight:500}
+.dash-item .val{font-weight:700;color:var(--dark);font-size:13px}
+.dash-item .val.blue{color:var(--blue)}
+.dash-item .val.green{color:var(--energ-txt)}
+
+/* Pie chart */
+.pie-container{padding:16px;display:flex;justify-content:center;align-items:center}
+.pie-pct-text{font-family:'Inter',sans-serif;font-size:9px;fill:#fff;font-weight:700;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.pie-label-name{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;fill:var(--dark)}
+.pie-label-hrs{font-family:'Inter',sans-serif;font-size:9px;fill:#888}
+.empty-state{padding:32px;text-align:center;color:#888;font-size:12px;font-style:italic}
+
+/* Top3 / QW */
+.deleg-item{padding:10px 14px;border-bottom:1px solid var(--lgrey)}
+.deleg-item:last-child{border-bottom:none}
+.di-name{font-weight:600;color:var(--charcoal);font-size:13px;margin-bottom:3px}
+.di-meta{color:#888;font-size:11px}
+.deleg-empty{padding:14px;font-size:12px;color:#888;font-style:italic}
+.qw-item{display:flex;align-items:flex-start;gap:8px;padding:9px 14px;border-bottom:1px solid var(--lgrey);font-size:12px;color:var(--dark)}
+.qw-item:last-child{border-bottom:none}
+.qw-dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-top:3px;flex-shrink:0}
+
+/* Tracker */
+.tracker-wrap{overflow-x:auto}
+table.tracker{width:100%;border-collapse:collapse;font-size:12px;min-width:700px;table-layout:auto}
+table.tracker th{background:var(--charcoal-sub);color:#fff;padding:9px 8px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.4;vertical-align:middle;text-align:center}
+table.tracker th.left{text-align:left;padding-left:12px;min-width:160px}
+table.tracker td{padding:5px 7px;border-bottom:1px solid var(--lgrey);vertical-align:middle;text-align:center}
+table.tracker td.left{text-align:left;word-wrap:break-word;max-width:0;white-space:normal}
+table.tracker tr:nth-child(even) td{background:#FAFAFA}
+/* coloured cells override alt-row bg */
+table.tracker td.cat-cell,
+table.tracker td.enrg-cell{background:transparent}
+
+table.tracker input[type=text]{width:100%;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:12px;color:var(--charcoal);outline:none;padding:2px 0;text-align:left;min-width:160px}
+table.tracker input[type=number]{width:56px;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:12px;color:var(--charcoal);outline:none;padding:2px 4px;text-align:center}
+table.tracker input:focus{border-bottom:2px solid var(--yellow)}
+table.tracker select{width:100%;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;outline:none;cursor:pointer;padding:4px 2px;border-radius:3px}
+table.tracker td.hrs-col{color:var(--blue);font-weight:700}
+table.tracker input[type=checkbox]{width:16px;height:16px;accent-color:var(--yellow);cursor:pointer}
+.del-row-btn{background:none;border:none;color:var(--mgrey);font-size:18px;cursor:pointer;padding:0 4px}
+.del-row-btn:hover{color:var(--t1)}
+.add-row-btn{margin:12px 16px;padding:8px 20px;background:var(--yellow);color:var(--charcoal);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;border:none;border-radius:4px;cursor:pointer;letter-spacing:.04em;text-transform:uppercase}
+
+/* Matrix */
+table.matrix{width:100%;border-collapse:collapse;font-size:12px}
+table.matrix th{background:var(--charcoal-sub);color:#fff;padding:9px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+table.matrix td{padding:10px 12px;border-bottom:1px solid var(--lgrey);vertical-align:middle}
+table.matrix tr:nth-child(even) td{background:#FAFAFA}
+.tier-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.t1-b{background:var(--t1-bg);color:var(--t1)}
+.t2-b{background:var(--t2-bg);color:var(--t2)}
+.t3-b{background:var(--t3-bg);color:var(--t3)}
+.t4-b{background:var(--t4-bg);color:var(--t4)}
+.t5-b{background:var(--t5-bg);color:var(--t5)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-text">
+    <h1>Founder Efficiency System</h1>
+    <p>Track your tasks, reclaim your time, and delegate with confidence</p>
+  </div>
+  <div class="logo-block">
+    <div class="sts">STS</div>
+    <div class="tagline">SYSTEMISE<br>TO SCALE</div>
+  </div>
+</div>
+<div class="accent-bar"></div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showView('dashboard',this)">📊 Dashboard</button>
+  <button class="nav-btn" onclick="showView('tracker',this)">⏱ Efficiency Tracker</button>
+  <button class="nav-btn" onclick="showView('matrix',this)">📝 Delegation Priorities</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="view-dashboard" class="view active">
+  <div class="container">
+    <div class="sec-label">Your efficiency snapshot — updates live as you add tasks</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total weekly hours tracked</div>
+        <div class="kpi-val" id="d-total-hrs">0.0</div>
+        <div class="kpi-sub">across all tasks</div>
+      </div>
+      <div class="kpi-card blue-top">
+        <div class="kpi-label">Tasks to systemise &amp; delegate</div>
+        <div class="kpi-val" id="d-del-count">0</div>
+        <div class="kpi-sub" id="d-del-hrs">0.0 hrs/week to reclaim</div>
+      </div>
+      <div class="kpi-card red-top">
+        <div class="kpi-label">Monthly value lost on low-value tasks</div>
+        <div class="kpi-val" id="d-monthly-loss">£0</div>
+        <div class="kpi-annual" id="d-annual-loss">Annual: £0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Your hourly value</div>
+        <div class="rate-wrap">
+          <span style="font-size:18px;font-weight:700">£</span>
+          <input type="number" id="hourly-rate" value="150" min="1" oninput="updateDashboard()">
+        </div>
+        <div class="kpi-sub">edit to match your rate</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-panel">
+        <div class="dash-panel-hdr dark">📊 Time breakdown by category</div>
+        <div class="pie-container" id="time-pie-wrap">
+          <div class="empty-state">Add tasks to see breakdown</div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dash-panel-hdr blue">🔋 Energy distribution</div>
+        <div class="pie-container" id="energy-pie-wrap">
+          <div class="empty-state">Add tasks to see breakdown</div>
+        </div>
+      </div>
+      <div class="dash-panel">
+        <div class="dash-panel-hdr gold">🎯 Delegation Snapshot</div>
+        <div>
+          <div class="dash-item"><span class="lbl">Systemise &amp; Delegate</span><span class="val blue" id="d-delegated">0</span></div>
+          <div class="dash-item"><span class="lbl">Not Yet Delegated</span><span class="val" id="d-not-del">0</span></div>
+          <div class="dash-item"><span class="lbl">Automation Possible</span><span class="val" id="d-auto">0</span></div>
+          <div class="dash-item"><span class="lbl">Hrs to Reclaim / Week</span><span class="val green" id="d-reclaim">0.0</span></div>
+          <div class="dash-item"><span class="lbl">Hrs Saving / Month</span><span class="val green" id="d-reclaim-mo">0.0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="panel">
+        <div class="panel-header">🏆 Top 3 Delegation Priorities</div>
+        <div id="top3-list"><div class="deleg-empty">No tasks marked for delegation yet</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header yellow-hdr">⚡ Quick Wins — Delegate This Week</div>
+        <div id="qw-list"><div class="deleg-empty">No quick wins yet — look for draining tasks under 60 minutes</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKER -->
+<div id="view-tracker" class="view">
+  <div class="container">
+    <div class="sec-label">Add every task you do — however small. Be thorough; this is your full time audit.</div>
+    <div class="panel">
+      <div class="panel-header">⏱ Efficiency Tracker</div>
+      <div class="tracker-wrap">
+        <table class="tracker">
+          <thead>
+            <tr>
+              <th class="left">Task</th>
+              <th style="width:90px">Category</th>
+              <th style="width:84px">Frequency</th>
+              <th style="width:60px">Time<br>(mins)</th>
+              <th style="width:60px">Hrs /<br>Week</th>
+              <th style="width:90px">Energy</th>
+              <th style="width:54px">Growth<br>1–5</th>
+              <th style="width:66px">Systemise<br>&amp; Delegate</th>
+              <th style="width:66px">Automation<br>Possible?</th>
+              <th style="width:30px"></th>
+            </tr>
+          </thead>
+          <tbody id="tracker-body"></tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addRow()">+ Add Task</button>
+    </div>
+    <div style="font-size:11px;color:#888;padding:0 4px">
+      Hrs/Week calculates automatically from frequency and minutes entered. Systemise &amp; Delegate = tasks to build a playbook for and hand to someone else.
+    </div>
+  </div>
+</div>
+
+<!-- MATRIX -->
+<div id="view-matrix" class="view">
+  <div class="container">
+    <div class="sec-label">Tasks marked for delegation — sorted by priority tier</div>
+    <div class="panel">
+      <div class="panel-header">📝 Delegation Priorities</div>
+      <div class="tracker-wrap">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th style="width:28%">Task</th>
+              <th>Energy</th>
+              <th>Hrs/Week</th>
+              <th>Growth Impact</th>
+              <th>Tier</th>
+              <th>Recommendation</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-body">
+            <tr><td colspan="6" class="empty-state">No tasks marked for delegation yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:8px">
+      <div style="padding:10px 14px;background:var(--t1-bg);border-radius:6px;border-left:3px solid var(--t1);font-size:11px"><strong style="color:var(--t1)">Tier 1 — Quick Win</strong><br>Draining + under 60 min. Create a playbook and delegate this week.</div>
+      <div style="padding:10px 14px;background:var(--t2-bg);border-radius:6px;border-left:3px solid var(--t2);font-size:11px"><strong style="color:var(--t2)">Tier 2 — Delegate This Month</strong><br>Draining 60+ min, or Neutral 60+ min.</div>
+      <div style="padding:10px 14px;background:var(--t3-bg);border-radius:6px;border-left:3px solid var(--t3);font-size:11px"><strong style="color:var(--t3)">Tier 3 — Consider Delegating</strong><br>Neutral + under 60 min.</div>
+      <div style="padding:10px 14px;background:var(--t4-bg);border-radius:6px;border-left:3px solid var(--t4);font-size:11px"><strong style="color:var(--t4)">Tier 4 — Review Later</strong><br>Everything else.</div>
+      <div style="padding:10px 14px;background:var(--t5-bg);border-radius:6px;border-left:3px solid var(--t5);font-size:11px"><strong style="color:var(--t5)">Tier 5 — When Ready to Scale</strong><br>Energising tasks marked for delegation.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let rows=[], nextId=1;
+
+// Pastel colour maps — bg, text, border
+const CAT_STYLE={
+  Growth:    {bg:'#C6EFCE',txt:'#276221',brd:'#82C481'},
+  Fulfilment:{bg:'#BDD7EE',txt:'#1F497D',brd:'#6BAED6'},
+  Structure: {bg:'#FFEB9C',txt:'#9C6500',brd:'#F4C842'},
+};
+const ENRG_STYLE={
+  Draining:  {bg:'#FFC7CE',txt:'#9C0006',brd:'#FF8080'},
+  Neutral:   {bg:'#BDD7EE',txt:'#1F497D',brd:'#6BAED6'},
+  Energising:{bg:'#C6EFCE',txt:'#276221',brd:'#82C481'},
+};
+
+function hrsPerWeek(freq,mins){
+  const m=parseFloat(mins)||0;
+  if(!freq||!m) return 0;
+  if(freq==='Daily')     return m*7/60;
+  if(freq==='Weekly')    return m/60;
+  if(freq==='Monthly')   return m*12/52/60;
+  if(freq==='Quarterly') return m*4/52/60;
+  if(freq==='Yearly')    return m/52/60;
+  return 0;
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+
+function catTd(id,val){
+  const s=CAT_STYLE[val]||{bg:'#fff',txt:'#232529',brd:'#D5D8DC'};
+  return `<td class="cat-cell" style="background:${s.bg};border:1px solid ${s.brd}">
+    <select style="color:${s.txt};font-weight:600;background:transparent;width:100%;border:none;outline:none;font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;padding:3px 2px"
+      onchange="updateField(${id},'cat',this.value);renderTracker();updateDashboard();updateMatrix()">
+      <option value="">— select —</option>
+      ${['Growth','Fulfilment','Structure'].map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}
+    </select>
+  </td>`;
+}
+
+function enrgTd(id,val){
+  const s=ENRG_STYLE[val]||{bg:'#fff',txt:'#232529',brd:'#D5D8DC'};
+  return `<td class="enrg-cell" style="background:${s.bg};border:1px solid ${s.brd}">
+    <select style="color:${s.txt};font-weight:600;background:transparent;width:100%;border:none;outline:none;font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;padding:3px 2px"
+      onchange="updateField(${id},'energy',this.value);renderTracker();updateDashboard();updateMatrix()">
+      <option value="">— select —</option>
+      ${['Draining','Neutral','Energising'].map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}
+    </select>
+  </td>`;
+}
+
+function freqSel(id,val){
+  return `<select style="width:100%;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:12px;color:#232529;outline:none;cursor:pointer;padding:3px 2px"
+    onchange="updateField(${id},'freq',this.value);renderTracker();updateDashboard();updateMatrix()">
+    <option value="">—</option>
+    ${['Daily','Weekly','Monthly','Quarterly','Yearly'].map(o=>`<option value="${o}"${o===val?' selected':''}>${o}</option>`).join('')}
+  </select>`;
+}
+
+function addRow(task='',cat='',freq='',mins='',energy='',growth='',delegate=false,automate=false){
+  rows.push({id:nextId++,task,cat,freq,mins,energy,growth,delegate,automate});
+  renderTracker();updateDashboard();updateMatrix();
+}
+
+function removeRow(id){
+  rows=rows.filter(r=>r.id!==id);
+  renderTracker();updateDashboard();updateMatrix();
+}
+
+function updateField(id,field,val){
+  const r=rows.find(r=>r.id===id);
+  if(r) r[field]=val;
+}
+
+function renderTracker(){
+  document.getElementById('tracker-body').innerHTML=rows.map(r=>{
+    const h=hrsPerWeek(r.freq,r.mins);
+    return `<tr>
+      <td class="left"><input type="text" value="${esc(r.task)}" placeholder="e.g. Answering team emails"
+        oninput="updateField(${r.id},'task',this.value);updateDashboard();updateMatrix()"></td>
+      ${catTd(r.id,r.cat)}
+      <td>${freqSel(r.id,r.freq)}</td>
+      <td><input type="number" value="${r.mins}" placeholder="0" min="1"
+        oninput="updateField(${r.id},'mins',this.value);renderTracker();updateDashboard();updateMatrix()"></td>
+      <td class="hrs-col">${h>0?h.toFixed(2):'—'}</td>
+      ${enrgTd(r.id,r.energy)}
+      <td><input type="number" value="${r.growth}" placeholder="1-5" min="1" max="5"
+        oninput="updateField(${r.id},'growth',this.value);updateDashboard();updateMatrix()"></td>
+      <td><input type="checkbox" ${r.delegate?'checked':''}
+        onchange="updateField(${r.id},'delegate',this.checked);updateDashboard();updateMatrix()"></td>
+      <td><input type="checkbox" ${r.automate?'checked':''}
+        onchange="updateField(${r.id},'automate',this.checked);updateDashboard()"></td>
+      <td><button class="del-row-btn" onclick="removeRow(${r.id})" title="Remove">×</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Pie chart ─────────────────────────────────────────────────────────────────
+function drawPie(containerId, slices){
+  const el=document.getElementById(containerId);
+  const total=slices.reduce((s,sl)=>s+sl.value,0);
+  if(!total){el.innerHTML='<div class="empty-state">Add tasks to see breakdown</div>';return;}
+
+  const W=280,H=200,cx=100,cy=100,R=85,gap=0.04;
+  let svg=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" overflow="visible">`;
+  let start=-Math.PI/2;
+  const segs=[];
+
+  slices.forEach(sl=>{
+    const frac=sl.value/total;
+    const sweep=frac*2*Math.PI;
+    if(sweep<0.01){start+=sweep;return;}
+    const s=start+gap, e=start+sweep-gap;
+    segs.push({...sl,frac,s,e,mid:(s+e)/2});
+    start+=sweep;
+  });
+
+  segs.forEach(seg=>{
+    const x1=cx+R*Math.cos(seg.s),y1=cy+R*Math.sin(seg.s);
+    const x2=cx+R*Math.cos(seg.e),y2=cy+R*Math.sin(seg.e);
+    const large=seg.e-seg.s>Math.PI?1:0;
+    svg+=`<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${R},${R},0,${large},1,${x2.toFixed(1)},${y2.toFixed(1)} Z"
+      fill="${seg.color}" stroke="white" stroke-width="2.5"/>`;
+    if(seg.frac>0.06){
+      const lx=cx+R*0.62*Math.cos(seg.mid);
+      const ly=cy+R*0.62*Math.sin(seg.mid);
+      const pct=Math.round(seg.frac*100);
+      svg+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" class="pie-pct-text">${pct}%</text>`;
+    }
+  });
+
+  // Legend right of pie
+  const lx=cx+R+16;
+  segs.forEach((seg,i)=>{
+    const ly=20+i*32;
+    svg+=`<rect x="${lx}" y="${ly}" width="11" height="11" rx="2" fill="${seg.color}"/>`;
+    svg+=`<text x="${lx+16}" y="${ly+9}" class="pie-label-name">${esc(seg.label)}</text>`;
+    svg+=`<text x="${lx+16}" y="${ly+21}" class="pie-label-hrs">${seg.hrs.toFixed(1)}h (${Math.round(seg.frac*100)}%)</text>`;
+  });
+
+  svg+='</svg>';
+  el.innerHTML=svg;
+}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+function updateDashboard(){
+  const rate=parseFloat(document.getElementById('hourly-rate').value)||150;
+  const valid=rows.filter(r=>r.freq&&r.mins);
+  const totalHrs=valid.reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
+  document.getElementById('d-total-hrs').textContent=totalHrs.toFixed(1);
+
+  const delRows=valid.filter(r=>r.delegate);
+  const delHrs=delRows.reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
+  document.getElementById('d-del-count').textContent=delRows.length;
+  document.getElementById('d-del-hrs').textContent=delHrs.toFixed(1)+' hrs/week to reclaim';
+
+  const lowHrs=valid.filter(r=>r.cat!=='Growth').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
+  const monthly=lowHrs*rate*4;
+  const annual=monthly*12;
+  document.getElementById('d-monthly-loss').textContent='£'+Math.round(monthly).toLocaleString('en-GB');
+  document.getElementById('d-annual-loss').textContent='Annual: £'+Math.round(annual).toLocaleString('en-GB');
+
+  // Time pie
+  const cats=[
+    {label:'Growth',   color:'#82C481'},
+    {label:'Fulfilment',color:'#6BAED6'},
+    {label:'Structure', color:'#F4C842'},
+  ].map(c=>({...c,hrs:valid.filter(r=>r.cat===c.label).reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)}))
+   .map(c=>({...c,value:c.hrs})).filter(c=>c.value>0);
+  drawPie('time-pie-wrap',cats);
+
+  // Energy pie
+  const enrgs=[
+    {label:'Draining',  color:'#FF8080'},
+    {label:'Neutral',   color:'#6BAED6'},
+    {label:'Energising',color:'#82C481'},
+  ].map(e=>({...e,hrs:valid.filter(r=>r.energy===e.label).reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)}))
+   .map(e=>({...e,value:e.hrs})).filter(e=>e.value>0);
+  drawPie('energy-pie-wrap',enrgs);
+
+  // Snapshot
+  document.getElementById('d-delegated').textContent=delRows.length;
+  document.getElementById('d-not-del').textContent=valid.filter(r=>!r.delegate).length;
+  document.getElementById('d-auto').textContent=rows.filter(r=>r.automate).length;
+  document.getElementById('d-reclaim').textContent=delHrs.toFixed(1);
+  document.getElementById('d-reclaim-mo').textContent=(delHrs*4).toFixed(1);
+
+  // Top 3 + QW
+  const mx=buildMatrix();
+  const t3=document.getElementById('top3-list');
+  t3.innerHTML=mx.length?mx.slice(0,3).map(r=>`<div class="deleg-item"><div class="di-name">${esc(r.task)}</div><div class="di-meta">${r.energy} · ${r.hrs.toFixed(2)} hrs/week · Tier ${r.tier}</div></div>`).join('')
+    :'<div class="deleg-empty">No tasks marked for delegation yet</div>';
+  const qw=mx.filter(r=>r.tier===1);
+  const qwEl=document.getElementById('qw-list');
+  qwEl.innerHTML=qw.length?qw.map(r=>`<div class="qw-item"><div class="qw-dot"></div><div>${esc(r.task)} <span style="color:#888;font-size:11px">(${r.hrs.toFixed(2)} hrs/week)</span></div></div>`).join('')
+    :'<div class="deleg-empty">No quick wins yet — look for draining tasks under 60 minutes</div>';
+}
+
+// ── Matrix ────────────────────────────────────────────────────────────────────
+function getTier(energy,hrs){
+  const m=hrs*60;
+  if(energy==='Energising') return 5;
+  if(energy==='Draining'&&m<60)  return 1;
+  if(energy==='Draining'&&m>=60) return 2;
+  if(energy==='Neutral'&&m>=60)  return 2;
+  if(energy==='Neutral'&&m<60)   return 3;
+  return 4;
+}
+function tierRec(t){
+  if(t===1) return 'Quick win — create a playbook and delegate this week';
+  if(t===2) return 'Create a playbook and delegate this month';
+  if(t===3) return 'Consider creating a playbook and delegating this month';
+  if(t===5) return 'Energising task — review when ready to scale';
+  return 'Review later';
+}
+function tierBadge(t){
+  const m={1:['Tier 1','t1-b'],2:['Tier 2','t2-b'],3:['Tier 3','t3-b'],4:['Tier 4','t4-b'],5:['Tier 5','t5-b']};
+  const [l,c]=m[t]||['Tier 4','t4-b'];
+  return `<span class="tier-badge ${c}">${l}</span>`;
+}
+function enrgBadge(e){
+  const s=ENRG_STYLE[e]||{bg:'#eee',txt:'#333',brd:'#ccc'};
+  return `<span style="background:${s.bg};color:${s.txt};border:1px solid ${s.brd};padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600">${e||'—'}</span>`;
+}
+
+function buildMatrix(){
+  return rows.filter(r=>r.delegate&&r.freq&&r.mins&&r.energy)
+    .map(r=>({...r,hrs:hrsPerWeek(r.freq,r.mins),tier:getTier(r.energy,hrsPerWeek(r.freq,r.mins))}))
+    .sort((a,b)=>a.tier-b.tier);
+}
+
+function updateMatrix(){
+  const mx=buildMatrix();
+  const tb=document.getElementById('matrix-body');
+  if(!mx.length){tb.innerHTML='<tr><td colspan="6" class="empty-state">No tasks marked for delegation yet — tick Systemise &amp; Delegate in the tracker</td></tr>';return;}
+  tb.innerHTML=mx.map(r=>`<tr>
+    <td><strong>${esc(r.task)}</strong></td>
+    <td>${enrgBadge(r.energy)}</td>
+    <td>${r.hrs.toFixed(2)}</td>
+    <td>${r.growth||'—'}/5</td>
+    <td>${tierBadge(r.tier)}</td>
+    <td style="font-size:11px;color:#666">${tierRec(r.tier)}</td>
+  </tr>`).join('');
+}
+
+function showView(name,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='dashboard') updateDashboard();
+  if(name==='matrix')    updateMatrix();
+}
+
+// Seed data
+addRow('Answering team questions','Structure','Daily',20,'Draining',2,true,false);
+addRow('Reconciling expense reports','Structure','Monthly',30,'Draining',1,true,false);
+addRow('Sending client status updates','Fulfilment','Weekly',45,'Neutral',2,true,true);
+addRow('Strategic planning & vision','Growth','Weekly',90,'Energising',5,false,false);
+addRow('Ordering office supplies','Structure','Monthly',10,'Draining',1,true,false);
+addRow('Managing calendar & meetings','Structure','Daily',15,'Draining',1,true,false);
+addRow('Sales calls & business development','Growth','Weekly',120,'Energising',5,false,false);
+addRow('Bookkeeping entries','Structure','Weekly',40,'Draining',1,true,true);
+updateDashboard();
+updateMatrix();
+</script>
+</body>
+</html>
