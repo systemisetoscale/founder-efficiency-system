@@ -5,102 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Founder Efficiency System | Systemise to Scale</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
-// ── PDF download ─────────────────────────────────────────────────────────────
-function downloadPDF(){
-  // Make all views visible for print then restore
-  const views = document.querySelectorAll('.view');
-  views.forEach(v=>v.classList.add('active'));
-  window.print();
-  // After print dialog closes, restore active view
-  setTimeout(()=>{
-    views.forEach(v=>v.classList.remove('active'));
-    const activeBtn = document.querySelector('.nav-btn.active');
-    const activeView = activeBtn ? activeBtn.getAttribute('onclick').match(/'([^']+)'/)[1] : 'dashboard';
-    document.getElementById('view-'+activeView).classList.add('active');
-  }, 500);
-}
-
-// ── Excel download ────────────────────────────────────────────────────────────
-function downloadExcel(){
-  if(typeof XLSX==='undefined'){ alert('Excel library not loaded yet — please wait a moment and try again.'); return; }
-
-  const wb = XLSX.utils.book_new();
-
-  // ── Sheet 1: Task Tracker ──
-  const trackerData = [
-    ['Task','Category','Frequency','Time (mins)','Hrs/Week','Energy','Growth Impact (1-5)','Systemise & Delegate','Automation Possible?']
-  ];
-  rows.forEach(r=>{
-    const h = hrsPerWeek(r.freq,r.mins);
-    trackerData.push([
-      r.task||'',
-      r.cat||'',
-      r.freq||'',
-      parseFloat(r.mins)||'',
-      h>0?Math.round(h*100)/100:'',
-      r.energy||'',
-      parseFloat(r.growth)||'',
-      r.delegate?'Yes':'No',
-      r.automate?'Yes':'No',
-    ]);
-  });
-  const ws1 = XLSX.utils.aoa_to_sheet(trackerData);
-  ws1['!cols'] = [{wch:40},{wch:12},{wch:12},{wch:12},{wch:10},{wch:12},{wch:16},{wch:20},{wch:20}];
-  XLSX.utils.book_append_sheet(wb, ws1, 'Efficiency Tracker');
-
-  // ── Sheet 2: Delegation Priorities ──
-  const matrixData = [
-    ['Task','Energy','Hrs/Week','Growth Impact','Tier','Recommendation']
-  ];
-  buildMatrix().forEach(r=>{
-    matrixData.push([
-      r.task||'',
-      r.energy||'',
-      Math.round(r.hrs*100)/100,
-      r.growth||'',
-      'Tier '+r.tier,
-      tierRec(r.tier),
-    ]);
-  });
-  const ws2 = XLSX.utils.aoa_to_sheet(matrixData);
-  ws2['!cols'] = [{wch:40},{wch:12},{wch:10},{wch:14},{wch:8},{wch:50}];
-  XLSX.utils.book_append_sheet(wb, ws2, 'Delegation Priorities');
-
-  // ── Sheet 3: Dashboard Summary ──
-  const rate = parseFloat(document.getElementById('hourly-rate').value)||150;
-  const valid = rows.filter(r=>r.freq&&r.mins);
-  const totalHrs = valid.reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
-  const delRows  = valid.filter(r=>r.delegate);
-  const delHrs   = delRows.reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
-  const lowHrs   = valid.filter(r=>r.cat!=='Growth').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
-  const monthly  = lowHrs*rate*4;
-  const summaryData = [
-    ['Founder Efficiency System — Dashboard Summary'],
-    [],
-    ['Hourly Value (£)', rate],
-    ['Total Weekly Hours Tracked', Math.round(totalHrs*100)/100],
-    ['Tasks to Systemise & Delegate', delRows.length],
-    ['Hours to Reclaim per Week', Math.round(delHrs*100)/100],
-    ['Hours Saving per Month', Math.round(delHrs*4*100)/100],
-    ['Monthly Value Lost on Low-Value Tasks (£)', Math.round(monthly)],
-    ['Annual Value Lost on Low-Value Tasks (£)', Math.round(monthly*12)],
-    [],
-    ['Time by Category'],
-    ['Growth (hrs/week)',    Math.round(valid.filter(r=>r.cat==='Growth').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
-    ['Fulfilment (hrs/week)',Math.round(valid.filter(r=>r.cat==='Fulfilment').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
-    ['Structure (hrs/week)', Math.round(valid.filter(r=>r.cat==='Structure').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
-    [],
-    ['Energy Distribution'],
-    ['Draining (hrs/week)',  Math.round(valid.filter(r=>r.energy==='Draining').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
-    ['Neutral (hrs/week)',   Math.round(valid.filter(r=>r.energy==='Neutral').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
-    ['Energising (hrs/week)',Math.round(valid.filter(r=>r.energy==='Energising').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
-  ];
-  const ws3 = XLSX.utils.aoa_to_sheet(summaryData);
-  ws3['!cols'] = [{wch:45},{wch:20}];
-  XLSX.utils.book_append_sheet(wb, ws3, 'Dashboard Summary');
-
-  XLSX.writeFile(wb, 'Founder-Efficiency-System.xlsx');
-}
 
 </script>
 <style>
@@ -708,6 +612,103 @@ addRow('Sales calls & business development','Growth','Weekly',120,'Energising',5
 addRow('Bookkeeping entries','Structure','Weekly',40,'Draining',1,true,true);
 updateDashboard();
 updateMatrix();
+
+// ── PDF download ─────────────────────────────────────────────────────────────
+function downloadPDF(){
+  // Make all views visible for print then restore
+  const views = document.querySelectorAll('.view');
+  views.forEach(v=>v.classList.add('active'));
+  window.print();
+  // After print dialog closes, restore active view
+  setTimeout(()=>{
+    views.forEach(v=>v.classList.remove('active'));
+    const activeBtn = document.querySelector('.nav-btn.active');
+    const activeView = activeBtn ? activeBtn.getAttribute('onclick').match(/'([^']+)'/)[1] : 'dashboard';
+    document.getElementById('view-'+activeView).classList.add('active');
+  }, 500);
+}
+
+// ── Excel download ────────────────────────────────────────────────────────────
+function downloadExcel(){
+  if(typeof XLSX==='undefined'){ alert('Excel library not loaded yet — please wait a moment and try again.'); return; }
+
+  const wb = XLSX.utils.book_new();
+
+  // ── Sheet 1: Task Tracker ──
+  const trackerData = [
+    ['Task','Category','Frequency','Time (mins)','Hrs/Week','Energy','Growth Impact (1-5)','Systemise & Delegate','Automation Possible?']
+  ];
+  rows.forEach(r=>{
+    const h = hrsPerWeek(r.freq,r.mins);
+    trackerData.push([
+      r.task||'',
+      r.cat||'',
+      r.freq||'',
+      parseFloat(r.mins)||'',
+      h>0?Math.round(h*100)/100:'',
+      r.energy||'',
+      parseFloat(r.growth)||'',
+      r.delegate?'Yes':'No',
+      r.automate?'Yes':'No',
+    ]);
+  });
+  const ws1 = XLSX.utils.aoa_to_sheet(trackerData);
+  ws1['!cols'] = [{wch:40},{wch:12},{wch:12},{wch:12},{wch:10},{wch:12},{wch:16},{wch:20},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Efficiency Tracker');
+
+  // ── Sheet 2: Delegation Priorities ──
+  const matrixData = [
+    ['Task','Energy','Hrs/Week','Growth Impact','Tier','Recommendation']
+  ];
+  buildMatrix().forEach(r=>{
+    matrixData.push([
+      r.task||'',
+      r.energy||'',
+      Math.round(r.hrs*100)/100,
+      r.growth||'',
+      'Tier '+r.tier,
+      tierRec(r.tier),
+    ]);
+  });
+  const ws2 = XLSX.utils.aoa_to_sheet(matrixData);
+  ws2['!cols'] = [{wch:40},{wch:12},{wch:10},{wch:14},{wch:8},{wch:50}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Delegation Priorities');
+
+  // ── Sheet 3: Dashboard Summary ──
+  const rate = parseFloat(document.getElementById('hourly-rate').value)||150;
+  const valid = rows.filter(r=>r.freq&&r.mins);
+  const totalHrs = valid.reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
+  const delRows  = valid.filter(r=>r.delegate);
+  const delHrs   = delRows.reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
+  const lowHrs   = valid.filter(r=>r.cat!=='Growth').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0);
+  const monthly  = lowHrs*rate*4;
+  const summaryData = [
+    ['Founder Efficiency System — Dashboard Summary'],
+    [],
+    ['Hourly Value (£)', rate],
+    ['Total Weekly Hours Tracked', Math.round(totalHrs*100)/100],
+    ['Tasks to Systemise & Delegate', delRows.length],
+    ['Hours to Reclaim per Week', Math.round(delHrs*100)/100],
+    ['Hours Saving per Month', Math.round(delHrs*4*100)/100],
+    ['Monthly Value Lost on Low-Value Tasks (£)', Math.round(monthly)],
+    ['Annual Value Lost on Low-Value Tasks (£)', Math.round(monthly*12)],
+    [],
+    ['Time by Category'],
+    ['Growth (hrs/week)',    Math.round(valid.filter(r=>r.cat==='Growth').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
+    ['Fulfilment (hrs/week)',Math.round(valid.filter(r=>r.cat==='Fulfilment').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
+    ['Structure (hrs/week)', Math.round(valid.filter(r=>r.cat==='Structure').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
+    [],
+    ['Energy Distribution'],
+    ['Draining (hrs/week)',  Math.round(valid.filter(r=>r.energy==='Draining').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
+    ['Neutral (hrs/week)',   Math.round(valid.filter(r=>r.energy==='Neutral').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
+    ['Energising (hrs/week)',Math.round(valid.filter(r=>r.energy==='Energising').reduce((s,r)=>s+hrsPerWeek(r.freq,r.mins),0)*100)/100],
+  ];
+  const ws3 = XLSX.utils.aoa_to_sheet(summaryData);
+  ws3['!cols'] = [{wch:45},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws3, 'Dashboard Summary');
+
+  XLSX.writeFile(wb, 'Founder-Efficiency-System.xlsx');
+}
 </script>
 </body>
 </html>
